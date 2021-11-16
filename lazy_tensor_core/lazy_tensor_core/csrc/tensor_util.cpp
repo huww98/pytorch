@@ -320,19 +320,19 @@ bool TensorCompare(const at::Tensor& t1, const at::Tensor& t2) {
                      contiguous_t1.numel() * contiguous_t1.itemsize()) == 0;
 }
 
-compiler::BackendDataPtr TensorToDataHandle(const at::Tensor& tensor,
-                                     const torch::lazy::BackendDevice& device) {
+torch::lazy::BackendDataPtr TensorToDataHandle(
+    const at::Tensor& tensor, const torch::lazy::BackendDevice& device) {
   return compiler::getBackend()
       ->MakeComputationDataFromTensor(
           tensor, torch::lazy::Shape(tensor.scalar_type(), tensor.sizes()),
           device);
 }
 
-std::vector<compiler::BackendDataPtr> CreateTensorsData(
+std::vector<torch::lazy::BackendDataPtr> CreateTensorsData(
     const std::vector<at::Tensor>& tensors,
     const std::vector<torch::lazy::BackendDevice>& devices) {
   CHECK_EQ(tensors.size(), devices.size());
-  std::vector<compiler::BackendDataPtr> result;
+  std::vector<torch::lazy::BackendDataPtr> result;
   result.reserve(tensors.size());
   for (size_t i = 0; i < tensors.size(); ++i) {
     torch::lazy::Shape shape(tensors[i].scalar_type(), tensors[i].sizes());
@@ -344,7 +344,7 @@ std::vector<compiler::BackendDataPtr> CreateTensorsData(
 }
 
 std::vector<at::Tensor> DataHandlesToTensors(
-    c10::ArrayRef<compiler::BackendDataPtr> data_handles,
+    c10::ArrayRef<torch::lazy::BackendDataPtr> data_handles,
     at::ScalarType dest_element_type) {
   std::vector<at::Tensor> tensors;
   for (const auto& handle : data_handles) {

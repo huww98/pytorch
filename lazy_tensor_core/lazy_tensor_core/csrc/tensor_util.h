@@ -15,21 +15,21 @@ namespace torch_lazy_tensors {
 std::vector<int64_t> ComputeArrayStrides(c10::ArrayRef<int64_t> sizes);
 
 std::vector<at::Tensor> DataHandlesToTensors(
-    c10::ArrayRef<compiler::BackendDataPtr> data_handles,
+    c10::ArrayRef<torch::lazy::BackendDataPtr> data_handles,
     at::ScalarType dest_element_type);
 
 bool TensorCompare(const at::Tensor& t1, const at::Tensor& t2);
 
 // Uploads an ATEN tensor data to the device and fetches the corresponding
 // device data handle.
-compiler::BackendDataPtr TensorToDataHandle(
+torch::lazy::BackendDataPtr TensorToDataHandle(
     const at::Tensor& tensor, const torch::lazy::BackendDevice& device);
 
 torch::lazy::hash_t TensorHash(const at::Tensor& tensor);
 
 // Retrieves the device data handles by parallel uploading data onto the
 // corresponding devices.
-std::vector<compiler::BackendDataPtr> CreateTensorsData(
+std::vector<torch::lazy::BackendDataPtr> CreateTensorsData(
     const std::vector<at::Tensor>& tensors,
     const std::vector<torch::lazy::BackendDevice>& devices);
 
