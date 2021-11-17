@@ -7,6 +7,30 @@ on:
   pull_request:
 
 jobs:
+  lintrunner-shadow:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+          architecture: x64
+      - name: Checkout PyTorch
+        uses: zhouzhuojie/checkout@05b13c9a0d21f08f6d5e64a1d5042246d13619d9
+      - name: Install lintrunner
+        run: cargo install lintrunner --version=~0.5
+      - name: init
+        run: lintrunner init
+      - name: Generate some code
+        run: |
+          set -eux
+          python3 -mtools.generate_torch_version --is_debug=false
+          python3 -mtools.codegen.gen -s aten/src/ATen -d build/aten/src/ATen
+          python3 -mtools.pyi.gen_pyi --native-functions-path aten/src/ATen/native/native_functions.yaml --deprecated-functions-path "tools/autograd/deprecated.yaml"
+          cat torch/_VF.pyi
+      - name:  lint
+        run: lintrunner torch/autograd/forward_ad.py
+
   quick-checks:
     runs-on: ubuntu-18.04
     steps:
